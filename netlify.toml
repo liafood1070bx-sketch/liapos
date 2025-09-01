@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,VITE_SUPABASE_URL"
+<<<<<<< HEAD
+=======
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+>>>>>>> d99568ca8c711cd7b98459535f7510ace053f5aa
