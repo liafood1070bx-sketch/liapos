@@ -316,7 +316,7 @@ export function Reports() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 space-y-2">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Rapports Professionnels</h1>
         <p className="text-gray-600 mt-1">Générez des rapports détaillés par dates, clients, produits et TVA</p>
@@ -346,7 +346,7 @@ export function Reports() {
       </div>
 
       {/* Filtres */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
           <Filter size={20} />
           <span>Filtres de Rapport</span>
@@ -431,7 +431,7 @@ export function Reports() {
       </div>
 
       {/* Aperçu des données */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Aperçu des Données</h2>
         
         {activeTab === 'invoices' && (

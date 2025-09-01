@@ -72,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (clientLoginTime && profile?.role === 'client') {
         const twoHours = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
         if (Date.now() - parseInt(clientLoginTime) > twoHours) {
-          console.log('Client session expired. Logging out.');
           setProfile(null); // Clear client profile
           localStorage.removeItem('client_login_time'); // Clear login time
         }
@@ -96,7 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginWithVat = async (vatNumber: string) => {
-    console.log('Attempting client login with VAT number:', vatNumber);
     // This is a "pretend" login for clients. It does not create a real session.
     const { data: client, error } = await supabase
       .from('clients')
@@ -109,10 +107,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Numéro de TVA incorrect ou client non trouvé. Veuillez vérifier votre saisie ou vous inscrire.');
     }
     if (client) {
-      console.log('Client found:', client);
       setProfile({ role: 'client', ...client });
       localStorage.setItem('client_login_time', Date.now().toString()); // Store login time
-      console.log('Profile set for client:', { role: 'client', ...client });
     }
     return { client };
   };

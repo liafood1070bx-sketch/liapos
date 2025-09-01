@@ -69,7 +69,7 @@ export function InvoiceList() {
   console.log('state.loading:', state.loading);
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestion des Factures</h1>

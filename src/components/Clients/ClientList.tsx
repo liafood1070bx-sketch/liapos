@@ -126,7 +126,7 @@ export function ClientList() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestion des Clients</h1>
@@ -194,7 +194,7 @@ export function ClientList() {
           <p className="mt-1 text-gray-500">Aucun client ne correspond à vos critères de recherche.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {state.clients.map((client) => (
             <div key={client.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between mb-4">
@@ -211,7 +211,10 @@ export function ClientList() {
                 </div>
                 <div className="flex space-x-1">
                   <button
-                    onClick={() => setEditingClient(client)}
+                    onClick={() => {
+                      setEditingClient(client);
+                      setShowForm(true);
+                    }}
                     className="text-blue-600 hover:text-blue-900 p-1"
                     disabled={loading}
                   >

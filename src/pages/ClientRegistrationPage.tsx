@@ -50,7 +50,7 @@ export function ClientRegistrationPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto p-8">
+      <div className="bg-white rounded-xl shadow-2xl w-full p-8">
         <div className="flex flex-col items-center mb-6">
           <div className="p-3 bg-blue-100 rounded-full mb-4">
             <UserPlus className="text-blue-600" size={32} />

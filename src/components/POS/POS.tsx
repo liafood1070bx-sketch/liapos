@@ -1,5 +1,5 @@
 import  { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, Trash2,  AlertCircle, Search } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Trash2,   Search } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { supabase } from '../../lib/supabase';
 import { OrderItem } from '../../types';
@@ -134,9 +134,19 @@ export function POS() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Point de Vente</h1>
-        <p className="text-gray-600 mt-1">Système de commande pour les clients</p>
+      <div className="bg-blue-600 text-white p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:bg-blue-700 mb-4">
+        <h1 className="text-3xl font-bold">Point de Vente</h1>
+        <p className="text-blue-100 mt-1">Système de commande pour les clients</p>
+        <div className="relative mt-4">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-200" size={20} />
+          <input
+            type="text"
+            placeholder="Rechercher un produit..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-300 w-full bg-blue-700 text-white placeholder-blue-200"
+          />
+        </div>
       </div>
 
       {/* Message d'alerte */}
@@ -150,43 +160,37 @@ export function POS() {
         </div>
       )} */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6"> {/* Changed to 4 columns */}
+      <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-104px)]"> {/* Changed to flexbox, adjusted height */}
         {/* Section Produits */}
-        <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 p-6"> {/* Changed to span 3 columns */}
-          <div className="flex items-center justify-between mb-4">
+        <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 overflow-y-auto"> {/* flex-1 to take remaining space */}
+          <div className="sticky top-0 z-10 bg-white pb-4 mb-4">
             <h2 className="text-xl font-semibold text-gray-900">Produits</h2>
-            <div className="flex items-center space-x-4"> {/* Added a flex container for search and category */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Rechercher un produit..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80"
-                />
-              </div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-500 focus:border-blue-500"
-              >
-                {uniqueCategories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
+            <div className="flex flex-wrap gap-2 mt-2"> {/* Container for category buttons */}
+              {uniqueCategories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-200 ${
+                    selectedCategory === category
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-[calc(100vh-200px)] overflow-y-auto"> {/* Increased height */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"> {/* Removed max-h, parent handles overflow */}
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between items-center text-center"
                 onClick={() => addToCart(product)}
               >
-                <div className="mb-2">
-                  <h3 className="font-medium text-gray-900 text-sm">{product.name}</h3>
+                <div className="mb-2 max-w-full">
+                  <h3 className="font-medium text-gray-900 text-xs whitespace-nowrap overflow-hidden text-ellipsis w-full">{product.name}</h3>
                   <span className={`px-2 py-1 rounded text-xs font-medium ${ 
                     product.category === 'BOISSON' ? 'bg-blue-100 text-blue-800' :
                     product.category === 'SNACK' ? 'bg-green-100 text-green-800' :
@@ -203,7 +207,7 @@ export function POS() {
         </div>
 
         {/* Panier */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-fit"> {/* Explicitly span 1 column */}
+        <div className="lg:w-2/5 bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6 h-[calc(40vh-24px)] overflow-y-auto"> {/* Made sticky, adjusted width and height */}
           <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
             <ShoppingCart className="mr-2" size={24} />
             Panier ({cart.length})

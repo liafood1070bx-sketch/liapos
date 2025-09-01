@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Client } from '../../types';
+import { supabase } from '../../lib/supabase';
 
 interface ClientFormProps {
   client?: Client | null;
@@ -10,33 +11,73 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onClose, onSave }: ClientFormProps) {
-  const { dispatch, createNewClient } = useApp(); // Changed
+  const { dispatch } = useApp();
   const [formData, setFormData] = useState({
-    name: client?.name || '',
-    email: client?.email || '',
-    phone: client?.phone || '',
-    address: client?.address || '',
-    company: client?.company || ''
+    name: '',
+    address: '',
+    postal_code: '',
+    city: '',
+    country: 'Belgique',
+    vat_intra: ''
   });
+
+  useEffect(() => {
+    if (client) {
+      setFormData({
+        name: client.name || '',
+        address: client.address || '',
+        postal_code: client.postal_code || '',
+        city: client.city || '',
+        country: client.country || 'Belgique',
+        vat_intra: client.vat_intra || ''
+      });
+    }
+  }, [client]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const baseClientData = {
-      ...formData,
-      createdAt: client?.createdAt || new Date(),
-      totalPurchases: client?.totalPurchases || 0
-    };
-
     if (client) {
-      // For existing clients, dispatch UPDATE_CLIENT with id and data
-      dispatch({ type: 'UPDATE_CLIENT', payload: { id: client.id, data: baseClientData } });
+      const { error } = await supabase
+        .from('clients')
+        .update(formData)
+        .eq('id', client.id);
+
+      if (error) {
+        console.error('Error updating client:', error);
+      } else {
+        dispatch({ type: 'UPDATE_CLIENT', payload: { id: client.id, data: formData } });
+        onSave();
+      }
     } else {
-      // For new clients, call createNewClient
-      await createNewClient(baseClientData);
+      // Generate new client code
+      const { data: lastClient, error: lastClientError } = await supabase
+        .from('clients')
+        .select('code')
+        .order('code', { ascending: false })
+        .limit(1)
+        .single();
+
+      let newCode = 'CL0050';
+      if (lastClient && lastClient.code) {
+        const lastCodeNumber = parseInt(lastClient.code.substring(2), 10);
+        newCode = `CL${(lastCodeNumber + 1).toString().padStart(4, '0')}`;
+      }
+
+      const newClientData = { ...formData, code: newCode };
+
+      const { data, error } = await supabase
+        .from('clients')
+        .insert(newClientData)
+        .select();
+
+      if (error) {
+        console.error('Error creating client:', error);
+      } else if (data) {
+        dispatch({ type: 'ADD_CLIENT', payload: data[0] });
+        onSave();
+      }
     }
-    
-    onClose();
   };
 
   return (
@@ -57,7 +98,7 @@ export function ClientForm({ client, onClose, onSave }: ClientFormProps) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nom complet
+              Nom Client
             </label>
             <input
               type="text"
@@ -70,27 +111,13 @@ export function ClientForm({ client, onClose, onSave }: ClientFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              N° TVA
             </label>
             <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              type="text"
+              value={formData.vat_intra}
+              onChange={(e) => setFormData({ ...formData, vat_intra: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Téléphone
-            </label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
             />
           </div>
 
@@ -98,24 +125,47 @@ export function ClientForm({ client, onClose, onSave }: ClientFormProps) {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Adresse
             </label>
-            <textarea
+            <input
+              type="text"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
-              required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Entreprise (optionnel)
+              Code Postale
             </label>
             <input
               type="text"
-              value={formData.company}
-              onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+              value={formData.postal_code}
+              onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Ville
+            </label>
+            <input
+              type="text"
+              value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Paye
+            </label>
+            <input
+              type="text"
+              value={formData.country}
+              readOnly
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
             />
           </div>
 

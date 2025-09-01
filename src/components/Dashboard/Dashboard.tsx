@@ -30,7 +30,7 @@ export function Dashboard() {
   const recentSales = state.sales.slice(-5);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 space-y-2">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
         <p className="text-gray-600 mt-1">Vue d'ensemble de votre activité</p>

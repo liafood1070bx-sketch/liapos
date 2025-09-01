@@ -32,7 +32,7 @@ export function Statistics() {
   const averageOrderValue = totalRevenue / state.sales.length || 0;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 space-y-2">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Statistiques et Rapports</h1>
         <p className="text-gray-600 mt-1">Analysez les performances de votre entreprise</p>
@@ -40,7 +40,7 @@ export function Statistics() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Chiffre d'Affaires Total</p>
@@ -56,7 +56,7 @@ export function Statistics() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Nombre de Ventes</p>
@@ -72,7 +72,7 @@ export function Statistics() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Panier Moyen</p>
@@ -88,7 +88,7 @@ export function Statistics() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Produits en Stock</p>
@@ -108,7 +108,7 @@ export function Statistics() {
 
       {/* Graphiques */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Évolution des Ventes</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -129,7 +129,7 @@ export function Statistics() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Répartition par Catégorie</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">

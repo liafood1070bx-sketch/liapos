@@ -216,7 +216,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const playNotificationSound = () => {
     if (audioRef.current) {
       audioRef.current.play().catch(error => {
-        console.error("Error playing sound:", error);
         // Optionally, show a toast notification to the user
         // For example, if you have a toast utility:
         // showErrorToast("Impossible de jouer la notification sonore. Veuillez interagir avec la page.");
@@ -229,10 +228,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
     
     if (!url || !key || url === 'your-project-url' || key === 'your-anon-key') {
-      console.warn('⚠️ Supabase not configured. Using mock data.');
-      console.warn('To connect to Supabase, create a .env file with:');
-      console.warn('VITE_SUPABASE_URL="your-supabase-url"');
-      console.warn('VITE_SUPABASE_ANON_KEY="your-supabase-anon-key"');
       return false;
     }
     
@@ -250,20 +245,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       dispatch({ type: 'SET_PENDING_ORDERS_COUNT', payload: count || 0 });
     } catch (error) {
-      console.error('Error fetching pending orders count:', error);
     }
   };
 
   const loadData = async () => {
-    console.log('loadData: starting');
     if (!isSupabaseConfigured()) {
-      console.log('loadData: Supabase not configured, setting loading to false');
       dispatch({ type: 'SET_LOADING', payload: false });
       return;
     }
 
     try {
-      console.log('loadData: Supabase configured, setting loading to true');
       dispatch({ type: 'SET_LOADING', payload: true });
 
       // Load company settings

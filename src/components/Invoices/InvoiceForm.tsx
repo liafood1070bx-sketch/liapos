@@ -28,8 +28,18 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
   const [paymentMethod, setPaymentMethod] = useState<'Espèce' | 'Virement bancaire' | 'Versement bancaire'>(
     invoice?.payment_method || 'Espèce'
   );
-  const [items, setItems] = useState<InvoiceItem[]>([]);
+  const [items, setItems] = useState<InvoiceItem[]>(invoice?.items || []);
   const [searchTerms, setSearchTerms] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (invoice?.items) {
+      const initialSearchTerms: { [key: string]: string } = {};
+      invoice.items.forEach((item: InvoiceItem) => {
+        initialSearchTerms[item.id] = item.product_name;
+      });
+      setSearchTerms(initialSearchTerms);
+    }
+  }, [invoice]);
   const [showSuggestions, setShowSuggestions] = useState<{ [key: string]: boolean }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -286,7 +296,15 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full max-h-full overflow-y-auto relative">
+        <div className="absolute top-2 left-2 z-50">
+          <button
+            onClick={onClose}
+            className="bg-red-600 text-white hover:bg-red-700 hover:text-white p-1 rounded-full transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
         {/* En-tête de la modal */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
           <div className="flex items-center justify-between">
@@ -310,20 +328,14 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
                 <Save size={18} />
                 <span>{loading ? 'Sauvegarde...' : 'Sauvegarder'}</span>
               </button>
-              <button
-                onClick={onClose}
-                className="text-white hover:text-blue-200 p-2 rounded-lg hover:bg-white/10 transition-colors"
-              >
-                <X size={24} />
-              </button>
             </div>
           </div>
         </div>
 
         {/* Contenu de la facture */}
         <div className="overflow-y-auto max-h-[calc(95vh-120px)]">
-          <div className="p-8 bg-gray-50">
-            <div className="bg-white rounded-xl shadow-lg max-w-6xl mx-auto">
+          <div className="p-4 bg-gray-50">
+            <div className="bg-white rounded-xl shadow-lg max-w-full mx-auto">
               
               {/* En-tête facture */}
               <div className="p-8 border-b border-gray-200">
@@ -336,7 +348,7 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
                     <input
                       type="text"
                       value={currentInvoiceNumber}
-                      readOnly
+                      onChange={(e) => setCurrentInvoiceNumber(e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 font-mono text-lg"
                     />
                   </div>
@@ -394,7 +406,7 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
               </div>
 
               {/* Tableau des articles */}
-              <div className="p-8">
+              <div className="p-6">
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold text-gray-900">Articles</h3>
@@ -433,9 +445,11 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
                                   <input
                                     ref={(el) => inputRefs.current[item.id] = el}
                                     type="text"
-                                    value={searchTerms[item.id] || ''}
+                                    value={item.product_name || searchTerms[item.id] || ''}
                                     onChange={(e) => {
-                                      setSearchTerms({ ...searchTerms, [item.id]: e.target.value });
+                                      const newProductName = e.target.value;
+                                      setSearchTerms({ ...searchTerms, [item.id]: newProductName });
+                                      updateItem(item.id, 'product_name', newProductName);
                                       setShowSuggestions({ ...showSuggestions, [item.id]: true });
                                     }}
                                     onFocus={() => handleInputFocus(item.id)}
@@ -599,7 +613,7 @@ export function InvoiceForm({ invoice, onClose, onSave }: InvoiceFormProps) {
                 </div>
 
                 {/* Totaux */}
-                <div className="flex justify-end">
+                <div className="flex justify-end ">
                   <div className="w-96 space-y-3">
                     <div className="flex justify-between py-2 text-gray-700 border-b">
                       <span className="font-medium">Total HT:</span>

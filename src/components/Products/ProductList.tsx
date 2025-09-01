@@ -186,7 +186,7 @@ export function ProductList() {
   }
 
   return (
-    <div className="p-4 relative">
+    <div className="p-2 relative">
       {/* Toast Notifications */}
       <div className="fixed top-4 right-4 space-y-2 z-50">
         {toasts.map((toast) => (
@@ -272,7 +272,6 @@ export function ProductList() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix HT</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TVA</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix TTC</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -301,16 +300,6 @@ export function ProductList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {product.sale_price_ttc.toFixed(2)} €
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`text-sm font-medium ${
-                      product.stock <= (product.alert_quantity ?? 0) ? 'text-red-600' : 'text-gray-900'
-                    }`}>
-                      {product.stock}
-                    </span>
-                    {product.stock <= (product.alert_quantity ?? 0) && (
-                      <span className="ml-1 text-red-500">⚠️</span>
-                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">

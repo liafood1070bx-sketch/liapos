@@ -19,10 +19,8 @@ export function LoginPage() {
   useEffect(() => {
     if (!loading && profile) {
       if (profile.role === 'admin') {
-        console.log('Navigating to /admin for admin profile.');
         navigate('/admin', { replace: true });
       } else if (profile.role === 'client') {
-        console.log('Navigating to /pos for client profile.');
         navigate('/pos', { replace: true });
       }
     }

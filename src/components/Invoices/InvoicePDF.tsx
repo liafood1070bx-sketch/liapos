@@ -56,14 +56,25 @@ export function InvoicePDF({ invoice, onClose }: InvoicePDFProps) {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-// Removed unused pdfHeight variable
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
-      const ratio = canvasWidth / canvasHeight;
-      const width = pdfWidth;
-      const height = width / ratio;
+      const imgWidth = pdfWidth;
+      let imgHeight = canvasHeight * pdfWidth / canvasWidth;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
       pdf.save(`facture-${invoice.id}.pdf`);
     });
   };
@@ -142,8 +153,8 @@ export function InvoicePDF({ invoice, onClose }: InvoicePDFProps) {
           </div>
         </div>
 
-        <div className="p-6" ref={invoiceRef}>
-          <div className="max-w-5xl mx-auto bg-white border border-gray-300">
+        <div className="p-8 w-[794px] min-h-[1123px] mx-auto overflow-hidden" ref={invoiceRef}>
+          <div className="bg-white border border-gray-300">
             {/* Header */}
             <div className="p-4 border-b border-gray-300">
               <div className="flex justify-between items-start">

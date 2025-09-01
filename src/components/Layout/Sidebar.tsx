@@ -16,6 +16,7 @@ import { useStockAlerts } from '../../hooks/useStockAlerts';
 
 interface SidebarProps {
   isCollapsed: boolean;
+  onLinkClick: () => void;
 }
 
 const menuItems = [
@@ -31,7 +32,7 @@ const menuItems = [
   { id: 'settings', label: 'Paramètres', icon: Settings, path: '/admin/settings' }
 ];
 
-export function Sidebar({ isCollapsed }: SidebarProps) {
+export function Sidebar({ isCollapsed, onLinkClick }: SidebarProps) {
   const location = useLocation();
   const alerts = useStockAlerts();
 
@@ -56,6 +57,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
             <Link
               key={item.id}
               to={item.path}
+              onClick={onLinkClick}
               className={`w-full flex items-center ${isCollapsed ? 'justify-center space-x-0' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-200 ${
                 isActive 
                   ? 'bg-blue-700 text-white shadow-md' 

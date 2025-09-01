@@ -104,21 +104,15 @@ const DetailedOrdersList: React.FC<{ orders: Order[] }> = ({ orders }) => {
             <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center space-x-2"> {/* Made client name an h3 */}
               <User size={20} className="text-gray-600" /> {/* Slightly larger icon */}
               <span className="text-red-500">{order.client_name || 'Client Inconnu'}</span> {/* Added red color */}
+              <span className="text-red-500 text-sm ml-2"> {/* Added red color and margin */}
+                ({new Date(order.created_at).toLocaleDateString('fr-FR')} - {new Date(order.created_at).toLocaleTimeString('fr-FR')})
+              </span>
               <span
                 className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}
               >
                 {order.status === 'pending' ? 'En attente' : 'Préparée'}
               </span>
             </h3>
-            <div className="flex items-center justify-between mb-3"> {/* Moved total and time here */}
-              <div> {/* Empty div to push total/time to right */}</div>
-              <div className="text-right">
-                
-                <p className="text-xs text-gray-500">
-                  {new Date(order.created_at).toLocaleTimeString('fr-FR')}
-                </p>
-              </div>
-            </div>
             
             <div className="space-y-1">
               {order.items.map((item, index) => (
@@ -254,13 +248,13 @@ export function OrderManagement() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestion des Commandes</h1>
           <p className="text-gray-600 mt-1">Suivi des commandes</p>
         </div>
         
-        <div className="flex items-center space-x-4">
+        <div className="mt-4 flex flex-wrap items-center gap-4">
           {!showAllOrders && (
             <div className="flex items-center space-x-2">
               <Calendar size={20} className="text-gray-500" />
