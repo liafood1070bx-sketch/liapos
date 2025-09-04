@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react'; // Import useEffect and useRef
 import { Bell, User, LogOut, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useStockAlerts } from '../../hooks/useStockAlerts';
 import { useAuth } from '../../context/AuthContext';
@@ -15,6 +15,18 @@ export function Header({ onMenuToggle, onCollapseToggle }: HeaderProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { state, clearPendingOrders } = useApp(); // Get state and clearPendingOrders from AppContext
+
+  const prevPendingOrdersCountRef = useRef(state.pendingOrdersCount); // Ref to store previous count
+
+  useEffect(() => {
+    if (state.pendingOrdersCount > prevPendingOrdersCountRef.current) {
+      // New pending order detected, play sound
+      const audio = new Audio('/notification.mp3'); // Path to your sound file
+      audio.play().catch(e => console.error("Error playing sound:", e));
+    }
+    // Update the ref with the current count for the next render
+    prevPendingOrdersCountRef.current = state.pendingOrdersCount;
+  }, [state.pendingOrdersCount]); // Dependency array: re-run when pendingOrdersCount changes
 
   const handleLogout = async () => {
     await logout();

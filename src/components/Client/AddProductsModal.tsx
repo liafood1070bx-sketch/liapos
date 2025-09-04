@@ -76,9 +76,9 @@ export function AddProductsModal({ order, onClose, onProductsAdded }: AddProduct
       showSuccessToast('Produits ajoutés à la commande avec succès !');
       onProductsAdded();
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding products to order:', error);
-      showErrorToast(`Erreur lors de l'ajout de produits à la commande : ${error.message}`);
+      showErrorToast(`Erreur lors de l'ajout de produits à la commande : ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 

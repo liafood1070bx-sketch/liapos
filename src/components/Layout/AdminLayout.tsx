@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 
 export function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false); // New state for collapse
+
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsCollapsed(false);
+  }, [location.pathname]);
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -32,7 +38,7 @@ export function AdminLayout() {
         ></div>
       )}
 
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:ml-20' : ''}`}>
         <Header onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} onCollapseToggle={toggleCollapse} />
         <main className="flex-1 overflow-y-auto p-2 lg:p-4 bg-white rounded-lg shadow-sm m-1 lg:m-2">
           <Outlet />

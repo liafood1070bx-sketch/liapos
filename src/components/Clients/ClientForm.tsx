@@ -51,7 +51,7 @@ export function ClientForm({ client, onClose, onSave }: ClientFormProps) {
       }
     } else {
       // Generate new client code
-      const { data: lastClient, error: lastClientError } = await supabase
+      const { data: lastClient } = await supabase
         .from('clients')
         .select('code')
         .order('code', { ascending: false })

@@ -15,6 +15,7 @@ export function POS() {
   const [selectedCategory, setSelectedCategory] = useState('All'); // New state for category filter
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isMobileCartOpen, setIsMobileCartOpen] = useState(false); // New state for mobile cart visibility
 
   // Automatically validate client if logged in
   useEffect(() => {
@@ -113,7 +114,7 @@ export function POS() {
 
       setMessage({ type: 'success', text: 'Commande envoyée avec succès!' });
       setCart([]);
-      
+      setIsMobileCartOpen(false); // Close cart after successful submission
       
     } catch (error) {
       console.error('Error submitting order:', error);
@@ -121,6 +122,11 @@ export function POS() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const cancelOrder = () => {
+    setCart([]);
+    setIsMobileCartOpen(false);
   };
 
 // Remove unused destructured values
@@ -135,12 +141,29 @@ export function POS() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="bg-blue-600 text-white p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:bg-blue-700 mb-4">
-        <h1 className="text-3xl font-bold">Point de Vente</h1>
-        <p className="text-blue-100 mt-1">Système de commande pour les clients</p>
+        <div className="flex justify-between items-center"> {/* Added flex container */}
+          <div>
+            <h1 className="text-3xl font-bold">Point de Vente</h1>
+            <p className="text-blue-100 mt-1">Système de commande pour les clients</p>
+          </div>
+          {/* Cart Icon for mobile */}
+          <button
+            onClick={() => setIsMobileCartOpen(true)}
+            className="relative lg:hidden p-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            <ShoppingCart size={28} />
+            {cart.length > 0 && (
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                {cart.length}
+              </span>
+            )}
+          </button>
+        </div>
         <div className="relative mt-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-200" size={20} />
           <input
             type="text"
+            id="product-search"
             placeholder="Rechercher un produit..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -160,7 +183,7 @@ export function POS() {
         </div>
       )} */}
 
-      <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-104px)]"> {/* Changed to flexbox, adjusted height */}
+      <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-50px)]"> {/* Changed to flexbox, adjusted height */}
         {/* Section Produits */}
         <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 overflow-y-auto"> {/* flex-1 to take remaining space */}
           <div className="sticky top-0 z-10 bg-white pb-4 mb-4">
@@ -207,60 +230,85 @@ export function POS() {
         </div>
 
         {/* Panier */}
-        <div className="lg:w-2/5 bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6 h-[calc(40vh-24px)] overflow-y-auto"> {/* Made sticky, adjusted width and height */}
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-            <ShoppingCart className="mr-2" size={24} />
-            Panier ({cart.length})
-          </h2>
+        <div className={`fixed inset-0 bg-white z-50 flex flex-col lg:static lg:w-2/5 lg:bg-white lg:rounded-xl lg:shadow-sm lg:border lg:border-gray-200 lg:p-6 lg:sticky lg:top-6 lg:h-[calc(100vh-104px)] lg:overflow-y-auto ${isMobileCartOpen ? 'translate-x-0' : 'translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
+          <div className="flex justify-between items-center p-6 lg:p-0 border-b lg:border-b-0">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+              <ShoppingCart className="mr-2" size={24} />
+              Panier ({cart.length})
+            </h2>
+            <button
+              onClick={() => setIsMobileCartOpen(false)}
+              className="lg:hidden p-2 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              <Minus size={24} />
+            </button>
+          </div>
 
-          {cart.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">Panier vide</p>
-          ) : (
-            <>
-              <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                {cart.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.product_name}</h4>
-                      <p className="text-xs text-gray-600">{item.product_code}</p>
-                      {/* Removed item total price */}
+          <div className="flex-1 p-6 lg:p-0 overflow-y-auto">
+            {cart.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">Panier vide</p>
+            ) : (
+              <>
+                <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm">{item.product_name}</h4>
+                        <p className="text-xs text-gray-600">{item.product_code}</p>
+                        {/* Removed item total price */}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-1 text-gray-500 hover:text-red-600"
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="w-8 text-center font-medium">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-1 text-gray-500 hover:text-green-600"
+                        >
+                          <Plus size={16} />
+                        </button>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="p-1 text-gray-500 hover:text-red-600 ml-2"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-1 text-gray-500 hover:text-red-600"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="w-8 text-center font-medium">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-1 text-gray-500 hover:text-green-600"
-                      >
-                        <Plus size={16} />
-                      </button>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="p-1 text-gray-500 hover:text-red-600 ml-2"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              {/* Removed total calculations */}
+                {/* Removed total calculations */}
 
-              <button
-                onClick={submitOrder}
-                disabled={cart.length === 0 || loading}
-                className="w-full mt-4 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-              >
-                {loading ? 'Envoi...' : 'Valider la Commande'}
-              </button>
-            </>
-          )}
+                <button
+                  onClick={submitOrder}
+                  disabled={cart.length === 0 || loading}
+                  className="w-full mt-4 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                >
+                  {loading ? 'Envoi...' : 'Valider la Commande'}
+                </button>
+                <button
+                  onClick={cancelOrder}
+                  disabled={cart.length === 0 || loading}
+                  className="w-full mt-2 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold hidden lg:block"
+                >
+                  Annuler
+                </button>
+              </>
+            )}
+          </div>
+          <div className="p-6 lg:p-0 border-t lg:border-t-0">
+            <button
+              onClick={cancelOrder}
+              className="w-full mt-4 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold lg:hidden"
+            >
+              Annuler
+            </button>
+          </div>
         </div>
       </div>
     </div>

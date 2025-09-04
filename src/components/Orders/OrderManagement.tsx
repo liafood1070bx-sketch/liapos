@@ -3,6 +3,7 @@ import { ClipboardList, Package, Check, Calendar, User, Hash, AlertCircle, Refre
 import { supabase } from '../../lib/supabase';
 import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
 import { Order, OrderItem } from '../../types';
+import { useApp } from '../../context/AppContext'; // Import useApp
 
 // Sub-component for Order Statistics
 const OrderStats: React.FC<{ totalOrders: number; uniqueProducts: number }> = 
@@ -138,6 +139,7 @@ const DetailedOrdersList: React.FC<{ orders: Order[] }> = ({ orders }) => {
 );}; // Added closing brace and semicolon
 
 export function OrderManagement() {
+  const { clearPendingOrders: clearPendingOrdersFromApp } = useApp(); // Get clearPendingOrders from AppContext
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-')); // Formats to YYYY-MM-DD
@@ -187,26 +189,11 @@ export function OrderManagement() {
     try {
       setLoading(true);
       
-      const orderIds = orders.map(order => order.id);
-      console.log('Attempting to mark orders as prepared. Order IDs:', orderIds);
+      // Call the centralized clearPendingOrders from AppContext
+      await clearPendingOrdersFromApp(); 
       
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ 
-          status: 'prepared',
-          prepared_at: new Date().toISOString()
-        })
-        .in('id', orderIds);
-
-      if (error) {
-        console.error('Supabase update error:', error);
-        throw error;
-      }
-
-      console.log('Supabase update successful. Data:', data);
-
       showSuccessToast('Commandes marquées comme préparées avec succès!');
-      await fetchOrders();
+      await fetchOrders(); // Re-fetch local orders to update the view
       
     } catch (error) {
       console.error('Error marking orders as prepared:', error);
@@ -214,7 +201,7 @@ export function OrderManagement() {
     } finally {
       setLoading(false);
     }
-  }, [orders, fetchOrders]);
+  }, [orders, fetchOrders, clearPendingOrdersFromApp]); // Add clearPendingOrdersFromApp to dependencies
 
   useEffect(() => {
     fetchOrders();

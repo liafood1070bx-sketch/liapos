@@ -36,6 +36,10 @@ export interface Client {
   country?: string;
   mobile?: string;
   vat_intra?: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  totalPurchases?: number;
 }
 
 export interface ClientRegistrationData {

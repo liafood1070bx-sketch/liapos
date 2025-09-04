@@ -20,7 +20,7 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
       if (error) {
         console.error('Error fetching order items:', error);
       } else {
-        setOrderItems(data as any);
+        setOrderItems(data);
       }
     };
     fetchOrderItems();

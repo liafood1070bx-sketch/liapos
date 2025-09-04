@@ -2,7 +2,7 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 interface OrderDetailModalProps {
-  order: any;
+  order: Order;
   onClose: () => void;
 }
 
@@ -42,7 +42,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {order.items.map((item: any, index: number) => (
+                {order.items.map((item: OrderItem, index: number) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap">{item.product_name} ({item.product_code})</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item.quantity}</td>

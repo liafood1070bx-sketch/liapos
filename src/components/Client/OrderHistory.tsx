@@ -5,17 +5,17 @@ import { OrderDetailModal } from './OrderDetailModal';
 
 export function OrderHistory() {
   const { profile } = useAuth();
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDateFilter, setSelectedDateFilter] = useState(''); // New state for date filter
-  const [editingOrder, setEditingOrder] = useState<any | null>(null); // State for the order being edited
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null); // State for the order being edited
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
-  const [viewingOrder, setViewingOrder] = useState<any | null>(null); // State for viewing order details
-  const [availableProducts, setAvailableProducts] = useState<any[]>([]); // New state for available products
+  const [viewingOrder, setViewingOrder] = useState<Order | null>(null); // State for viewing order details
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([]); // New state for available products
   const [selectedProductCategory, setSelectedProductCategory] = useState(''); // New state for product category filter
   const [productCategories, setProductCategories] = useState<string[]>([]); // New state for product categories
 
-  const openEditModal = (order: any) => {
+  const openEditModal = (order: Order) => {
     // Deep copy the order to avoid direct state mutation
     setEditingOrder(JSON.parse(JSON.stringify(order)));
     setIsModalOpen(true);
@@ -27,7 +27,7 @@ export function OrderHistory() {
     setIsModalOpen(false);
   };
 
-  const openDetailModal = (order: any) => {
+  const openDetailModal = (order: Order) => {
     setViewingOrder(order);
   };
 
@@ -91,7 +91,7 @@ export function OrderHistory() {
       console.error('Error fetching product categories:', error);
     } else {
       console.log('Fetched product categories:', data); // Added for debugging
-      setProductCategories(data?.map((item: any) => item.category) || []);
+      setProductCategories(data?.map((item: { category: string }) => item.category) || []);
     }
   }, []);
 
@@ -124,11 +124,11 @@ export function OrderHistory() {
 
   const handleRemoveItem = (index: number) => {
     if (!editingOrder) return;
-    const updatedItems = editingOrder.items.filter((_: any, i: number) => i !== index);
+    const updatedItems = editingOrder.items.filter((_: OrderItem, i: number) => i !== index);
 
     // Recalculate order totals
-    const newSubtotal = updatedItems.reduce((sum: number, item: { total_ht: number }) => sum + item.total_ht, 0);
-    const newTax = updatedItems.reduce((sum: number, item: { total_ht: number, vat_rate: number }) => sum + (item.total_ht * item.vat_rate / 100), 0);
+    const newSubtotal = updatedItems.reduce((sum: number, item: OrderItem) => sum + item.total_ht, 0);
+    const newTax = updatedItems.reduce((sum: number, item: OrderItem) => sum + (item.total_ht * item.vat_rate / 100), 0);
     const newTotal = newSubtotal + newTax;
 
     setEditingOrder({
@@ -140,11 +140,11 @@ export function OrderHistory() {
     });
   };
 
-  const handleAddProduct = (product: any) => {
+  const handleAddProduct = (product: Product) => {
     if (!editingOrder) return;
 
     const existingItemIndex = editingOrder.items.findIndex(
-      (item: any) => item.product_id === product.id
+      (item: OrderItem) => item.product_id === product.id
     );
 
     let updatedItems;
@@ -344,7 +344,7 @@ export function OrderHistory() {
           <p className="text-gray-600 mb-4">Statut : {editingOrder.status}</p>
 
           <div className="space-y-4 mb-6">
-            {editingOrder.items.map((item: any, index: number) => (
+            {editingOrder.items.map((item: OrderItem, index: number) => (
               <div key={item.id || index} className="flex items-center justify-between border-b pb-2">
                 <div>
                   <p className="font-medium">{item.product_name}</p>
@@ -394,7 +394,7 @@ export function OrderHistory() {
               ) : (
                 <ul className="divide-y divide-gray-100">
                   {availableProducts
-                    .filter(product => !editingOrder.items.some((item: any) => item.product_id === product.id))
+                    .filter(product => !editingOrder.items.some((item: OrderItem) => item.product_id === product.id))
                     .map((product) => (
                       <li key={product.id} className="py-2 flex items-center justify-between">
                         <div>

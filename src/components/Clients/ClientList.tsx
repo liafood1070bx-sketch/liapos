@@ -1,9 +1,8 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Users, Plus, Edit, Trash2, Mail, Phone, MapPin, FileText, RefreshCw, AlertTriangle, Search } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ClientForm } from './ClientForm';
 import { supabase } from '../../lib/supabase';
-
 import { Client } from '../../types';
 
 export function ClientList() {
@@ -39,7 +38,7 @@ export function ClientList() {
     };
   }, [vatFilter]);
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -65,7 +64,7 @@ export function ClientList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedNameFilter, debouncedVatFilter, dispatch]);
 
   const handleDelete = async (clientId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) return;
@@ -91,7 +90,7 @@ export function ClientList() {
 
   useEffect(() => {
     fetchClients();
-  }, [debouncedNameFilter, debouncedVatFilter]);
+  }, [fetchClients]);
 
   if (loading && state.clients.length === 0) {
     return (
@@ -204,8 +203,8 @@ export function ClientList() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">{client.name}</h3>
-                    {(client as any).company && (
-                      <p className="text-sm text-gray-600">{(client as any).company}</p>
+                    {client.company && (
+                      <p className="text-sm text-gray-600">{client.company}</p>
                     )}
                   </div>
                 </div>
@@ -231,16 +230,16 @@ export function ClientList() {
               </div>
 
               <div className="space-y-3">
-                {(client as any).email && (
+                {client.email && (
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <Mail size={16} />
-                    <span>{(client as any).email}</span>
+                    <span>{client.email}</span>
                   </div>
                 )}
-                {(client as any).phone && (
+                {client.phone && (
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <Phone size={16} />
-                    <span>{(client as any).phone}</span>
+                    <span>{client.phone}</span>
                   </div>
                 )}
                 {client.address && (
@@ -264,7 +263,7 @@ export function ClientList() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Total Achats</span>
                   <span className="font-semibold text-green-600">
-                    €{(client as any).totalPurchases?.toFixed(2) || '0.00'}
+                    €{client.totalPurchases?.toFixed(2) || '0.00'}
                   </span>
                 </div>
               </div>
@@ -289,4 +288,3 @@ export function ClientList() {
     </div>
   );
 }
-    

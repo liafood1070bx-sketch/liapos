@@ -30,10 +30,10 @@ export function Dashboard() {
   const recentSales = state.sales.slice(-5);
 
   return (
-    <div className="p-2 space-y-2">
+    <div className="p-0 space-y-2">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
-        <p className="text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
+        <p className="text-gray-600 mt-1">Vue d'overview de votre activité</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -91,7 +91,7 @@ export function Dashboard() {
           <RecentSalesChart sales={recentSales} />
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Produits Populaires</h3>
           <div className="space-y-3">
             {state.products.slice(0, 5).map((product) => (
@@ -111,7 +111,7 @@ export function Dashboard() {
       </div>
 
       {/* Section Dernières Commandes */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mt-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Dernières Commandes</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
